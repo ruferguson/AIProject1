@@ -26,6 +26,8 @@ public class AIProject1Main extends PApplet {
 
 	MelodyPlayer player; //play a midi sequence
 	MidiFileToNotes midiNotes; //read a midi file
+	ProbabilityGenerator<Integer> pitchGenerator;
+	ProbabilityGenerator<Double> rhythmGenerator;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -44,8 +46,8 @@ public class AIProject1Main extends PApplet {
 		fill(120, 50, 240);
 		
 		// create my generators for pitch and rhythm
-		ProbabilityGenerator<Integer> pitchGenerator = new ProbabilityGenerator<Integer>();
-		ProbabilityGenerator<Double> rhythmGenerator = new ProbabilityGenerator<Double>();
+		pitchGenerator = new ProbabilityGenerator<Integer>();
+		rhythmGenerator = new ProbabilityGenerator<Double>();
 
 		
 		// returns a url
@@ -53,14 +55,15 @@ public class AIProject1Main extends PApplet {
 		// playMidiFile(filePath);
 
 		midiNotes = new MidiFileToNotes(filePath); //creates a new MidiFileToNotes -- reminder -- ALL objects in Java must 
-													//be created with "new". Note how every object is a pointer or reference. Every. single. one.
+												//be created with "new". Note how every object is a pointer or reference. Every. single. one.
 
 
-//		// which line to read in --> this object only reads one line (or ie, voice or ie, one instrument)'s worth of data from the file
+	    // which line to read in --> this object only reads one line (or ie, voice or ie, one instrument)'s worth of data from the file
 		midiNotes.setWhichLine(0);
 
 		pitchGenerator.train(midiNotes.getPitchArray());
 		rhythmGenerator.train(midiNotes.getRhythmArray());
+
 		
 		player = new MelodyPlayer(this, 100.0f);
 		
@@ -104,6 +107,8 @@ public class AIProject1Main extends PApplet {
 
 	//this starts & restarts the melody.
 	public void keyPressed() {
+		// ProbabilityGenerator<Integer> pitchGenerator = new ProbabilityGenerator<Integer>();
+
 		MidiFileToNotes midiNotesMary; // read a midi file
 		// returns a url
 		String filePath = getPath("mid/MaryHadALittleLamb.mid");
@@ -117,14 +122,26 @@ public class AIProject1Main extends PApplet {
 		// which line to read in --> this object only reads one line (or ie, voice or ie, one instrument)'s worth of data from the file
 		midiNotesMary.setWhichLine(0);
 
-		
+
 		if (key == ' ') {
 			player.reset();
 			println("Melody started!");
-		} /* else if (key == '1') {
-			// run your unit 1
+		} else if (key == '1') {
+			// UNIT TEST 1
+			System.out.println("Pitches:\n\n-----Probability Distribution-----\n");
+			for (int i = 0; i < pitchGenerator.getAlphabetSize(); i++) {
+				System.out.println("Token: " + pitchGenerator.getToken(i) + " | Probability: " +
+				pitchGenerator.getProbability(i));
+			}
+			System.out.println("\n------------\n\nRhythms:\n\n-----Probability Distribution-----\n");
+			for (int i = 0; i < rhythmGenerator.getAlphabetSize(); i++) {
+				System.out.println("Token: " + rhythmGenerator.getToken(i) + " | Probability: " + 
+				rhythmGenerator.getProbability(i));
+			}
+			System.out.println("\n------------\n");
+
 			System.out.println(midiNotesMary.getPitchArray());
 			System.out.println(midiNotesMary.getRhythmArray());
-		}*/
+		}
 	}
 }

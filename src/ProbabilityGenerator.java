@@ -40,20 +40,48 @@ public class ProbabilityGenerator<T> {
 		alphabet_counts = new ArrayList<Integer>();
 	}
 	
+	public int getAlphabetSize() {
+		return alphabet.size();
+	}
+	
+	public ArrayList<Integer> getAlphabetCounts() {
+		return alphabet_counts;
+	}
+	
+	public T getToken(int index) {
+		return alphabet.get(index);
+	}
+	
+	public double getProbability(int index) {
+		double answer = alphabet_counts.get(index) / getTotalCount();
+		return answer;
+	}
+	
+	public double getTotalCount() {
+		double answer = 0;
+		for (int i = 0; i < alphabet_counts.size(); i++) {
+			answer = answer + alphabet_counts.get(i);
+		}
+		return answer;
+	}
+	
 	// it is training probability generator with new data
 	void train(ArrayList<T> newTokens) {
 		// you will code the training function that will add new Tokens to alphabet
-		// do not erase alphabet counts
-		for (int i = 0; i < newTokens.size() - 1; i++) {
+		for (int i = 0; i < newTokens.size(); i++) {
 			int index = alphabet.indexOf(newTokens.get(i));
-			
+			// if new token is not in the alphabet array, add a new ArrayList item with the new token
 			if (index == -1) {
 				alphabet.add(newTokens.get(i));
 				alphabet_counts.add(0);
-			}      
-			
-			int tempCount = alphabet_counts.get(i) + 1;
-			alphabet_counts.add(i, tempCount);
+			}   
+			// if token already exists, count it
+			for (int j = 0; j < alphabet.size(); j++) {
+				if (alphabet.get(j).equals(newTokens.get(i))) {
+					int tempCount = alphabet_counts.get(j) + 1;
+					alphabet_counts.set(j, tempCount);
+				}
+			}
 			}
 		 /* NOTE: at some point you will want to normalize your counts – ie. divide by total
 		    & get values that add to 1. In this version of the algorithm, we do this in
@@ -64,7 +92,7 @@ public class ProbabilityGenerator<T> {
 		    add up. Live dangerously, is what I am saying */
 	}
 	
-	/*
+	
 	T generate() {
 		T newToken = null;
 		
@@ -72,7 +100,8 @@ public class ProbabilityGenerator<T> {
 		// inside your class unless you somehow reference your main class. 
 		double totalNotes = 0;
 		for (int i = 0; i < alphabet.size() - 1; i++) {
-			totalNotes = totalNotes + alphabet.get(i);
+			double currentNote = (double) alphabet.get(i);
+			totalNotes = totalNotes + currentNote;
 		}
 		
 		ArrayList<Double> normalized = new ArrayList<Double>();
@@ -94,16 +123,7 @@ public class ProbabilityGenerator<T> {
 		} else if (rIndex < normalized.get(4)) {
 			// then d
 			System.out.println("d");
-		} else if (rIndex < normalized.get(5)) {
-			// then e
-			System.out.println("e");
-		} else if (rIndex < normalized.get(6)) {
-			// then f
-			System.out.println("f");
-		} else if (rIndex < normalized.get(7)) {
-			// then g
-			System.out.println("g");
-		}
+		} 
 		
 		// do something here
 		return newToken;
@@ -118,5 +138,5 @@ public class ProbabilityGenerator<T> {
 		
 		return newSequence;
 	}
-	*/
+	
 }
