@@ -31,6 +31,7 @@ import java.util.ArrayList;
 
 public class ProbabilityGenerator<T> {
 	
+	
 	ArrayList<T> alphabet;
 	ArrayList<Integer> alphabet_counts;
 	
@@ -43,13 +44,70 @@ public class ProbabilityGenerator<T> {
 	void train(ArrayList<T> newTokens) {
 		// you will code the training function that will add new Tokens to alphabet
 		// do not erase alphabet counts
+		for (int i = 0; i < newTokens.size() - 1; i++) {
+			int index = alphabet.indexOf(newTokens.get(i));
+			
+			if (index == -1) {
+				alphabet.add(newTokens.get(i));
+				alphabet_counts.add(0);
+			}      
+			
+			int tempCount = alphabet_counts.get(i) + 1;
+			alphabet_counts.add(i, tempCount);
+			}
+		 /* NOTE: at some point you will want to normalize your counts – ie. divide by total
+		    & get values that add to 1. In this version of the algorithm, we do this in
+		    generate(). However, if working with larger sets of data, you may want to do this
+		    in this step after each train & store normalized values to prevent overflow problems.
+		    However, for this project and for assigned projects, this is unlikely, so feel free
+		    to skip until you enter in an enormous amount of data yourself and the numbers don’t
+		    add up. Live dangerously, is what I am saying */
 	}
 	
+	/*
 	T generate() {
 		T newToken = null;
+		
+		// actual java code. yw!! Note that you will not be able to use processing code
+		// inside your class unless you somehow reference your main class. 
+		double totalNotes = 0;
+		for (int i = 0; i < alphabet.size() - 1; i++) {
+			totalNotes = totalNotes + alphabet.get(i);
+		}
+		
+		ArrayList<Double> normalized = new ArrayList<Double>();
+		for (int i = 0; i < alphabet_counts.size(); i++) {
+			normalized.add((double) alphabet_counts.get(i) / totalNotes); 
+		}
+
+		
+		float rIndex = (float) Math.random();
+		if (rIndex < normalized.get(1)) {
+			// then a
+			System.out.println("a");
+		} else if (rIndex < normalized.get(2)) {
+			// then b
+			System.out.println("b");
+		} else if (rIndex < normalized.get(3)) {
+			// then c
+			System.out.println("c");
+		} else if (rIndex < normalized.get(4)) {
+			// then d
+			System.out.println("d");
+		} else if (rIndex < normalized.get(5)) {
+			// then e
+			System.out.println("e");
+		} else if (rIndex < normalized.get(6)) {
+			// then f
+			System.out.println("f");
+		} else if (rIndex < normalized.get(7)) {
+			// then g
+			System.out.println("g");
+		}
+		
 		// do something here
 		return newToken;
-	}
+	} 
 	
 	ArrayList<T> generate( int length ) {
 		ArrayList<T> newSequence = new ArrayList<T>();
@@ -60,5 +118,5 @@ public class ProbabilityGenerator<T> {
 		
 		return newSequence;
 	}
-
+	*/
 }

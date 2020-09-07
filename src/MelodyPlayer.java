@@ -100,12 +100,11 @@ public class MelodyPlayer {
 			outputMidiBus.sendNoteOn(0, (int) melody.get(note_index), vel);
 			System.out.println("note on:" + note_index); //TODO: comment out when not debugging or not needed
 
-			if (hasRhythm)
+			if (hasRhythm) 
 				rhythm_multiplier = rhythm.get(note_index);
-
+			
 			note_index++;
 		}
-
 	}
 
 	//reset note to 0
