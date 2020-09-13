@@ -47,6 +47,7 @@ public class MelodyPlayer {
 	void setMelody(ArrayList<Integer> m) {
 		melody = m;
 		hasMelody = true;
+		System.out.println(m); // test to see the array of notes in the melody
 	}
 
 	void setRhythm(ArrayList<Double> r) {

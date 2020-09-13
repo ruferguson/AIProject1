@@ -30,6 +30,12 @@ public class ProbabilityGenerator<T> {
 		return alphabet_counts;
 	}
 	
+	
+	// returns the ArrayList containing the counts of occurrences for each note
+	public ArrayList<T> getAlphabet() {
+		return alphabet;
+	}
+	
 	// returns the token at a given index in the ArrayList alphabet
 	public T getToken(int index) {
 		return alphabet.get(index);
@@ -77,30 +83,21 @@ public class ProbabilityGenerator<T> {
 		}
 	}
 	
-	
-	// WORK IN PROGRESS
 	T generate() {
+		getProbabilities();
 		T newToken = null;
 		
-		double rIndex = (double) Math.random();
-		
-		/*
-		if (rIndex < probabilities.get(probabilities.size())) {
-			// then a
-			System.out.println("a");
-		} else if (rIndex < probabilities.get(probabilities.size() - 1)) {
-			// then b
-			System.out.println("b");
-		} else if (rIndex < probabilities.get(probabilities.size() - 2)) {
-			// then c
-			System.out.println("c");
-		} else if (rIndex < probabilities.get(probabilities.size() - 3)) {
-			// then d
-			System.out.println("d");
-		} 
-		*/
-		
-		// do something here
+		double rIndex = (double) Math.random(); // generate a random double between 0 and 1
+		boolean found = false; // a boolean to notify program if the note is found and returned
+		int i = 0; // to allow exit from while()
+
+		while ((i <= probabilities.size() - 1) && (!found)) {
+			if (rIndex > probabilities.get(i) || rIndex < probabilities.get(probabilities.size() - 1)) {
+				newToken = alphabet.get(i);
+				found = true;
+			}
+			i++;
+		}		
 		return newToken;
 	} 
 	

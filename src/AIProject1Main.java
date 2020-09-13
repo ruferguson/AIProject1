@@ -49,7 +49,8 @@ public class AIProject1Main extends PApplet {
 
 		
 		// returns a url
-		String filePath = getPath("mid/MaryHadALittleLamb.mid");
+		String filePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
+		// String filePath = getPath("mid/gardel_por.mid"); // use this for probabilistic generation
 		// playMidiFile(filePath);
 
 		midiNotes = new MidiFileToNotes(filePath); //creates a new MidiFileToNotes -- reminder -- ALL objects in Java must 
@@ -66,21 +67,24 @@ public class AIProject1Main extends PApplet {
 		
 		player.setup();
 
-		player.setMelody(midiNotes.getPitchArray());
-		player.setRhythm(midiNotes.getRhythmArray());
-		
-		/* generate() is a work in progress
-		 * player.setMelody(pitchGenerator.generate(20)); 
-		 * player.setRhythm(rhythmGenerator.generate(20)); */
+		// player.setMelody(midiNotes.getPitchArray());
+		// player.setRhythm(midiNotes.getRhythmArray());
+	
+		player.setMelody(pitchGenerator.generate(20)); 
+		player.setRhythm(rhythmGenerator.generate(20));
 	}
 
 	public void draw() {
-		player.play(); //play each note in the sequence -- the player will determine whether is time for a note onset
+	    player.play(); //play each note in the sequence -- the player will determine whether is time for a note onset
 
 		textAlign(CENTER);
 		textSize(18);
+		fill(125, 0, 255);
+		text("Press 1 for Unit Test 1", width/2, height*2/6); // display instructions to the user
 		fill(150, 0, 255);
-		text("Press 1 to start the unit test!", width/2, height/2); // display instructions to the user
+		text("Press 2 for Unit Test 2", width/2, height*3/6); 
+		fill(175, 0, 255);
+		text("Press 3 for Unit Test 3", width/2, height*4/6);
 	}
 
 	//this finds the absolute path of a file
@@ -108,8 +112,6 @@ public class AIProject1Main extends PApplet {
 
 	//this starts & restarts the melody.
 	public void keyPressed() {
-		// ProbabilityGenerator<Integer> pitchGenerator = new ProbabilityGenerator<Integer>(); WORK IN PROGRESS
-
 		MidiFileToNotes midiNotesMary; // read a midi file
 		// returns a url
 		String filePath = getPath("mid/MaryHadALittleLamb.mid");
@@ -140,6 +142,43 @@ public class AIProject1Main extends PApplet {
 				rhythmGenerator.getProbability(i));
 			}
 			System.out.println("\n------------\n");
-		}
+		} else if (key == '2') {
+			// UNIT TEST 2			
+			System.out.println("Pitches:");
+			System.out.println(pitchGenerator.generate(20));
+			System.out.println("\nRhythms:");
+			System.out.println(rhythmGenerator.generate(20));
+		} else if (key == '3') {
+			// UNIT TEST 3
+			ProbabilityGenerator<Integer> melodyPitchGen = new ProbabilityGenerator<Integer>();
+			ProbabilityGenerator<Double> melodyRhythmGen = new ProbabilityGenerator<Double>();
+			ProbabilityGenerator<Integer> probDistPitchGen = new ProbabilityGenerator<Integer>();
+			ProbabilityGenerator<Double> probDistRhythmGen = new ProbabilityGenerator<Double>();
+
+			melodyPitchGen.train(midiNotes.getPitchArray());
+			melodyRhythmGen.train(midiNotes.getRhythmArray());
+			
+			for (int i = 0; i < 9999; i++) {
+				melodyPitchGen.generate(20);
+				melodyRhythmGen.generate(20);
+				probDistPitchGen.train(midiNotes.getPitchArray());
+				probDistRhythmGen.train(midiNotes.getRhythmArray());
+			}
+			
+			System.out.println("Probability of Generated Pitches after 10,000 iterations of 20 note melodies:\n" + 
+					"\nPitches:\n\n-----Probability Distribution-----\n");
+			for (int i = 0; i < probDistPitchGen.getAlphabetSize(); i++) {
+				System.out.println("Token: " + probDistPitchGen.getToken(i) + " | Probability: " +
+				probDistPitchGen.getProbability(i));
+			}
+			System.out.println("\n------------\n\n"
+					+ "Probability of Generated Rhythms after 10,000 iterations of 20 note melodies:"
+					+ "\n\nRhythms:\n\n-----Probability Distribution-----\n");
+			for (int i = 0; i < probDistRhythmGen.getAlphabetSize(); i++) {
+				System.out.println("Token: " + probDistRhythmGen.getToken(i) + " | Probability: " + 
+				probDistRhythmGen.getProbability(i));
+			}
+			System.out.println("\n------------\n");
+		} 
 	}
 }
