@@ -1,5 +1,5 @@
 /* Ru Ferguson
- * 8 September 2020
+ * 14 September 2020
  * 
  * This class will store the musical notes and the number of occurences of each note
  * using the train() method and will generate and output the next most probable note
@@ -13,11 +13,14 @@ public class ProbabilityGenerator<T> {
 	ArrayList<T> alphabet;
 	ArrayList<Integer> alphabet_counts;
 	ArrayList<Double> probabilities;
+	ArrayList<Double> probDist;
+
 	
 	ProbabilityGenerator() {
 		alphabet = new ArrayList<T>();
 		alphabet_counts = new ArrayList<Integer>();
 		probabilities = new ArrayList<Double>();
+		probDist = new ArrayList<Double>();
 	}
 	
 	// returns the size of the alphabet ArrayList
@@ -59,14 +62,31 @@ public class ProbabilityGenerator<T> {
 	// adds the probabilities to an ArrayList called probabilities
 	public ArrayList<Double> getProbabilities() { 
 		for (int i = 0; i < alphabet_counts.size(); i++) {
-			probabilities.add((double) alphabet_counts.get(i) / getTotal()); 
+			while (probabilities.isEmpty() || probabilities.size() != alphabet_counts.size()) {
+				probabilities.add((double) alphabet_counts.get(i) / getTotal()); 
+			}
+			probabilities.set(i, (double) alphabet_counts.get(i) / getTotal()); 
 		}
 		return probabilities;
 	}
 	
+	// uses the probabilities calculated in getProbabilities() to create a distribution to generate from
+	public ArrayList<Double> getProbDist(ArrayList<Double> probs) { 
+		double temp = 0;
+		if (probDist.isEmpty()) {
+			probDist.add(temp); 
+		}
+		for (int i = 0; i < probs.size(); i++) {
+			temp = temp + probs.get(i);
+			probDist.add(temp);
+		}
+		return probDist;
+	}
+	
 	// adds new tokens to the alphabet ArrayList and counts number of occurrences in the alphabet_counts ArrayList
 	void train(ArrayList<T> newTokens) {
-		for (int i = 0; i < newTokens.size(); i++) {
+		int i = 0;
+		while (i < newTokens.size()) {
 			int index = alphabet.indexOf(newTokens.get(i));
 			// if new token is not in the alphabet array, add a new ArrayList item with the new token
 			if (index == -1) {
@@ -80,19 +100,20 @@ public class ProbabilityGenerator<T> {
 					alphabet_counts.set(j, tempCount);
 				}
 			}
+			i++;
 		}
 	}
 	
 	T generate() {
-		getProbabilities();
+		getProbDist(getProbabilities());
 		T newToken = null;
 		
 		double rIndex = (double) Math.random(); // generate a random double between 0 and 1
 		boolean found = false; // a boolean to notify program if the note is found and returned
 		int i = 0; // to allow exit from while()
-
-		while ((i <= probabilities.size() - 1) && (!found)) {
-			if (rIndex > probabilities.get(i) || rIndex < probabilities.get(probabilities.size() - 1)) {
+		
+		while ((i <= probabilities.size() - 1) && (!found)) { 
+			if (rIndex < probDist.get(i + 1)) {
 				newToken = alphabet.get(i);
 				found = true;
 			}

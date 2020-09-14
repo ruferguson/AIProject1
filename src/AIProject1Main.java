@@ -40,17 +40,14 @@ public class AIProject1Main extends PApplet {
 	}
 
 	//doing all the setup stuff
-	public void setup() {
-		fill(120, 50, 240);
-		
+	public void setup() {		
 		// create my generators for pitch and rhythm
 		pitchGenerator = new ProbabilityGenerator<Integer>();
 		rhythmGenerator = new ProbabilityGenerator<Double>();
-
 		
 		// returns a url
-		String filePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
-		// String filePath = getPath("mid/gardel_por.mid"); // use this for probabilistic generation
+		// String filePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
+		String filePath = getPath("mid/gardel_por.mid"); // use this for probabilistic generation
 		// playMidiFile(filePath);
 
 		midiNotes = new MidiFileToNotes(filePath); //creates a new MidiFileToNotes -- reminder -- ALL objects in Java must 
@@ -67,9 +64,11 @@ public class AIProject1Main extends PApplet {
 		
 		player.setup();
 
+		// play the midi notes as they are in the file
 		// player.setMelody(midiNotes.getPitchArray());
 		// player.setRhythm(midiNotes.getRhythmArray());
 	
+		// generate 20 new notes using the probabalistic generator
 		player.setMelody(pitchGenerator.generate(20)); 
 		player.setRhythm(rhythmGenerator.generate(20));
 	}
@@ -129,8 +128,12 @@ public class AIProject1Main extends PApplet {
 		if (key == ' ') {
 			player.reset();
 			println("Melody started!");
+			
 		} else if (key == '1') {
 			// UNIT TEST 1
+			String UTFilePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
+			midiNotes = new MidiFileToNotes(UTFilePath); // setting midiNotes to Mary Had a Little Lamb for Unit Test
+
 			System.out.println("Pitches:\n\n-----Probability Distribution-----\n");
 			for (int i = 0; i < pitchGenerator.getAlphabetSize(); i++) {
 				System.out.println("Token: " + pitchGenerator.getToken(i) + " | Probability: " +
@@ -143,40 +146,45 @@ public class AIProject1Main extends PApplet {
 			}
 			System.out.println("\n------------\n");
 		} else if (key == '2') {
-			// UNIT TEST 2			
-			System.out.println("Pitches:");
+			// UNIT TEST 2		
+			String UTFilePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
+			midiNotes = new MidiFileToNotes(UTFilePath); // setting midiNotes to Mary Had a Little Lamb for Unit Test
+			
+			System.out.println("20 pitches from one melody generated:");
 			System.out.println(pitchGenerator.generate(20));
-			System.out.println("\nRhythms:");
-			System.out.println(rhythmGenerator.generate(20));
+			System.out.println("\n20 rhythms from one melody generated:");
+			System.out.println(rhythmGenerator.generate(20) + "\n------------\n");
+			
 		} else if (key == '3') {
 			// UNIT TEST 3
+			String UTFilePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
+			midiNotes = new MidiFileToNotes(UTFilePath); // setting midiNotes to Mary Had a Little Lamb for Unit Test
+			
 			ProbabilityGenerator<Integer> melodyPitchGen = new ProbabilityGenerator<Integer>();
 			ProbabilityGenerator<Double> melodyRhythmGen = new ProbabilityGenerator<Double>();
 			ProbabilityGenerator<Integer> probDistPitchGen = new ProbabilityGenerator<Integer>();
 			ProbabilityGenerator<Double> probDistRhythmGen = new ProbabilityGenerator<Double>();
-
+			
+			ArrayList<Integer> newSongPitches = new ArrayList<Integer>();
+			ArrayList<Double> newSongRhythms = new ArrayList<Double>();
+			
 			melodyPitchGen.train(midiNotes.getPitchArray());
 			melodyRhythmGen.train(midiNotes.getRhythmArray());
-			
+
 			for (int i = 0; i < 9999; i++) {
-				melodyPitchGen.generate(20);
-				melodyRhythmGen.generate(20);
-				probDistPitchGen.train(midiNotes.getPitchArray());
-				probDistRhythmGen.train(midiNotes.getRhythmArray());
+				newSongPitches = melodyPitchGen.generate(20);
+				newSongRhythms = melodyRhythmGen.generate(20);	
+				probDistPitchGen.train(newSongPitches);
+				probDistRhythmGen.train(newSongRhythms);
 			}
 			
-			System.out.println("Probability of Generated Pitches after 10,000 iterations of 20 note melodies:\n" + 
-					"\nPitches:\n\n-----Probability Distribution-----\n");
+			System.out.println("Probability of Generated Pitches after 10,000 iterations of 20 note melodies:\n\n-----Probability Distribution-----\n");
 			for (int i = 0; i < probDistPitchGen.getAlphabetSize(); i++) {
-				System.out.println("Token: " + probDistPitchGen.getToken(i) + " | Probability: " +
-				probDistPitchGen.getProbability(i));
+				System.out.println("Token: " + probDistPitchGen.getToken(i) + " | Probability: " + probDistPitchGen.getProbability(i));
 			}
-			System.out.println("\n------------\n\n"
-					+ "Probability of Generated Rhythms after 10,000 iterations of 20 note melodies:"
-					+ "\n\nRhythms:\n\n-----Probability Distribution-----\n");
+			System.out.println("\n------------\n\nProbability of Generated Rhythms after 10,000 iterations of 20 note melodies:\n\n-----Probability Distribution-----\n");
 			for (int i = 0; i < probDistRhythmGen.getAlphabetSize(); i++) {
-				System.out.println("Token: " + probDistRhythmGen.getToken(i) + " | Probability: " + 
-				probDistRhythmGen.getProbability(i));
+				System.out.println("Token: " + probDistRhythmGen.getToken(i) + " | Probability: " + probDistRhythmGen.getProbability(i));
 			}
 			System.out.println("\n------------\n");
 		} 
