@@ -1,11 +1,10 @@
 /* Ru Ferguson
- * 8 September 2020
+ * 14 September 2020
  * 
- * This program will play Mary Had a Little Lamb using the Kontakt MIDI Player and will store 
+ * This program will play the Super Mario Bros Theme using the Kontakt MIDI Player and will store 
  * the notes used, the occurrences of each note, and the probabilities of each note occurring 
- * in ArrayLists using the ProbabilityGenerator class. 
- * 
- * Press "1" to activate the Unit Test 1 */
+ * in ArrayLists using the ProbabilityGenerator class. The class can also generate the next most likely
+ * note using the probabilities stored to attempt to produce "nice" sounding melodies. */
 
 import processing.core.*;
 
@@ -36,7 +35,7 @@ public class AIProject1Main extends PApplet {
 
 	//setting the window size to 300x300
 	public void settings() {
-		size(300, 300);
+		size(350, 350);
 	}
 
 	//doing all the setup stuff
@@ -46,8 +45,7 @@ public class AIProject1Main extends PApplet {
 		rhythmGenerator = new ProbabilityGenerator<Double>();
 		
 		// returns a url
-		// String filePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
-		String filePath = getPath("mid/gardel_por.mid"); // use this for probabilistic generation
+		String filePath = getPath("mid/Super_Mario_Bros_Theme.mid"); // use this for probabilistic generation
 		// playMidiFile(filePath);
 
 		midiNotes = new MidiFileToNotes(filePath); //creates a new MidiFileToNotes -- reminder -- ALL objects in Java must 
@@ -56,34 +54,37 @@ public class AIProject1Main extends PApplet {
 	    // which line to read in --> this object only reads one line (or ie, voice or ie, one instrument)'s worth of data from the file
 		midiNotes.setWhichLine(0);
 
-		// call the train function for both pitches and rhythms
-		pitchGenerator.train(midiNotes.getPitchArray());
-		rhythmGenerator.train(midiNotes.getRhythmArray());
-
 		player = new MelodyPlayer(this, 100.0f);
 		
 		player.setup();
 
 		// play the midi notes as they are in the file
-		// player.setMelody(midiNotes.getPitchArray());
-		// player.setRhythm(midiNotes.getRhythmArray());
-	
-		// generate 20 new notes using the probabalistic generator
-		player.setMelody(pitchGenerator.generate(20)); 
-		player.setRhythm(rhythmGenerator.generate(20));
+		player.setMelody(midiNotes.getPitchArray());
+		player.setRhythm(midiNotes.getRhythmArray());
 	}
 
 	public void draw() {
 	    player.play(); //play each note in the sequence -- the player will determine whether is time for a note onset
 
+	    background(250);
+	    // display instructions to the user
 		textAlign(CENTER);
-		textSize(18);
-		fill(125, 0, 255);
-		text("Press 1 for Unit Test 1", width/2, height*2/6); // display instructions to the user
-		fill(150, 0, 255);
-		text("Press 2 for Unit Test 2", width/2, height*3/6); 
+		textSize(20);
+		fill(100, 0, 255);
+		text("Welcome to the\nProbabalistic Melody Generator", width/2, height*1/10);
+		textSize(16);
+		fill(115, 0, 255);
+		text("Press p to play 35 generated notes\nfrom Super_Mario_Bros_Theme.mid", width/2, height*3/10);
+		fill(130, 0, 255);
+		text("Press the spacebar to restart the melody", width/2, height*5/10);
+		fill(145, 0, 255);
+		text("Press s to stop playing", width/2, height*6/10);
+		fill(160, 0, 255);
+		text("Press 1 for Unit Test 1", width/2, height*7/10);
 		fill(175, 0, 255);
-		text("Press 3 for Unit Test 3", width/2, height*4/6);
+		text("Press 2 for Unit Test 2", width/2, height*8/10); 
+		fill(190, 0, 255);
+		text("Press 3 for Unit Test 3", width/2, height*9/10);
 	}
 
 	//this finds the absolute path of a file
@@ -113,27 +114,51 @@ public class AIProject1Main extends PApplet {
 	public void keyPressed() {
 		MidiFileToNotes midiNotesMary; // read a midi file
 		// returns a url
-		String filePath = getPath("mid/MaryHadALittleLamb.mid");
+		String filePath = getPath("mid/Super_Mario_Bros_Theme.mid");
 		// playMidiFile(filePath);
 
 		midiNotesMary = new MidiFileToNotes(filePath);
 		//creates a new MidiFileToNotes -- reminder -- ALL objects in Java must 
 		//be created with "new". Note how every object is a pointer or reference. Every. single. one.
 
-
 		// which line to read in --> this object only reads one line (or ie, voice or ie, one instrument)'s worth of data from the file
 		midiNotesMary.setWhichLine(0);
-
 
 		if (key == ' ') {
 			player.reset();
 			println("Melody started!");
 			
+		} else if (key == 'p') {
+			filePath = getPath("mid/Super_Mario_Bros_Theme.mid");
+			midiNotes = new MidiFileToNotes(filePath);
+			midiNotes.setWhichLine(0);
+			
+			pitchGenerator = new ProbabilityGenerator<Integer>();
+			rhythmGenerator = new ProbabilityGenerator<Double>();
+			
+			// call the train function for both pitches and rhythms
+			pitchGenerator.train(midiNotes.getPitchArray());
+			rhythmGenerator.train(midiNotes.getRhythmArray());
+			
+			player = new MelodyPlayer(this, 100.0f);
+			player.setup();
+			
+			// generate 20 new notes using the probabalistic generator
+			player.setMelody(pitchGenerator.generate(35)); 
+			player.setRhythm(rhythmGenerator.generate(35));
+			
 		} else if (key == '1') {
 			// UNIT TEST 1
-			String UTFilePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
-			midiNotes = new MidiFileToNotes(UTFilePath); // setting midiNotes to Mary Had a Little Lamb for Unit Test
+			filePath = getPath("mid/MaryHadALittleLamb.mid");
+			midiNotes = new MidiFileToNotes(filePath);
+			midiNotes.setWhichLine(0);
 
+			pitchGenerator = new ProbabilityGenerator<Integer>();
+			rhythmGenerator = new ProbabilityGenerator<Double>();
+			
+			pitchGenerator.train(midiNotes.getPitchArray());
+			rhythmGenerator.train(midiNotes.getRhythmArray());
+			
 			System.out.println("Pitches:\n\n-----Probability Distribution-----\n");
 			for (int i = 0; i < pitchGenerator.getAlphabetSize(); i++) {
 				System.out.println("Token: " + pitchGenerator.getToken(i) + " | Probability: " +
@@ -146,19 +171,27 @@ public class AIProject1Main extends PApplet {
 			}
 			System.out.println("\n------------\n");
 		} else if (key == '2') {
-			// UNIT TEST 2		
-			String UTFilePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
-			midiNotes = new MidiFileToNotes(UTFilePath); // setting midiNotes to Mary Had a Little Lamb for Unit Test
+			// UNIT TEST 2
+			filePath = getPath("mid/MaryHadALittleLamb.mid");
+			midiNotes = new MidiFileToNotes(filePath);
+			midiNotes.setWhichLine(0);
+
+			pitchGenerator = new ProbabilityGenerator<Integer>();
+			rhythmGenerator = new ProbabilityGenerator<Double>();
 			
-			System.out.println("20 pitches from one melody generated:");
+			pitchGenerator.train(midiNotes.getPitchArray());
+			rhythmGenerator.train(midiNotes.getRhythmArray());
+			
+			System.out.println("20 pitches from one melody generated from Mary Had a Little Lamb:");
 			System.out.println(pitchGenerator.generate(20));
-			System.out.println("\n20 rhythms from one melody generated:");
+			System.out.println("\n20 rhythms from one melody generated from Mary Had a Little Lamb:");
 			System.out.println(rhythmGenerator.generate(20) + "\n------------\n");
 			
 		} else if (key == '3') {
 			// UNIT TEST 3
-			String UTFilePath = getPath("mid/MaryHadALittleLamb.mid"); // use Mary Had a Little Lamb for Unit Tests
-			midiNotes = new MidiFileToNotes(UTFilePath); // setting midiNotes to Mary Had a Little Lamb for Unit Test
+			filePath = getPath("mid/MaryHadALittleLamb.mid");
+			midiNotes = new MidiFileToNotes(filePath);
+			midiNotes.setWhichLine(0);
 			
 			ProbabilityGenerator<Integer> melodyPitchGen = new ProbabilityGenerator<Integer>();
 			ProbabilityGenerator<Double> melodyRhythmGen = new ProbabilityGenerator<Double>();
@@ -187,6 +220,8 @@ public class AIProject1Main extends PApplet {
 				System.out.println("Token: " + probDistRhythmGen.getToken(i) + " | Probability: " + probDistRhythmGen.getProbability(i));
 			}
 			System.out.println("\n------------\n");
-		} 
+		} else if (key == 's') {		
+			player.hasMelody = false; // stops the player
+		}
 	}
 }
